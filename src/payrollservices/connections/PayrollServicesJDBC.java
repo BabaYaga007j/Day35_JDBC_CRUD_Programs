@@ -1,9 +1,7 @@
 package payrollservices.connections;
 
 import java.sql.*;
-
 import javax.security.auth.callback.ConfirmationCallback;
-
 import payrollservices.model.EmployeePayrollPojo;
 
 public class PayrollServicesJDBC {
@@ -19,6 +17,15 @@ public class PayrollServicesJDBC {
 		Connection connection = DriverManager.getConnection(url,userName,password);
 		Statement statement = connection.createStatement();
 		
+	//remove employee from payroll
+		
+		PreparedStatement statementrem = connection
+				.prepareStatement("delete from payroll_detail where EmployeeName = ?");
+		statementrem.setString(1, pojo.getEmployeeName());
+		int confirm = statementrem.executeUpdate();
+		System.out.println(confirm);
+		statement.close();
+		connection.close();
 		//adding new employee 
 		String queryInsert = "insert into employee_payroll (EmployeeName,NetPay,StartDate,City,Country,Address,Department,BasicPay,Deductions,TaxablePay,Tax)"
 				+ " values (?,?,?,?,?,?,?,?,?,?,?);";
@@ -36,8 +43,8 @@ public class PayrollServicesJDBC {
 		statementIn.setInt(10, pojo.getTaxAblePay());
 		statementIn.setInt(11, pojo.getTax());
 		try {
-			int confirm = statementIn.executeUpdate();
-			System.out.println(confirm==1? "Added ":" Error while Adding ");
+			int confirm1 = statementIn.executeUpdate();
+			System.out.println(confirm1==1? "Added ":" Error while Adding ");
 			connection.commit();
 			}catch (Exception e) {
 				connection.rollback();
